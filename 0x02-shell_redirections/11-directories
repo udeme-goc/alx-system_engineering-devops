@@ -1,2 +1,6 @@
 #!/bin/bash
+<<<<<<< HEAD
 ls -Ral | wc -l 
+=======
+find . -mindepth 1 -type d | wc -l
+>>>>>>> e16063bb124a53cd76e3370adba84b1a070b951d
