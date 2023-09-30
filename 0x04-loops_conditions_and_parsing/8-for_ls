@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# 8-for_ls: display the content of a directory in a list format
+# where only the part of the name after the dash is displayed.
+
+for name in * ; do
+	echo "${name#*-}"
+done

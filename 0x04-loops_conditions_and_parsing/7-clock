@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# 7-clock: display the time for 12 hour and 59 minutes.
+
+hour=0
+while [ $hour -le 12 ]; do
+	echo "Hour: $hour"
+	minute=1
+	while [ $minute -lt 60 ]; do
+		echo "$minute"
+		minute=$(( minute + 1 ))
+	done
+	hour=$(( hour + 1 ))
+done

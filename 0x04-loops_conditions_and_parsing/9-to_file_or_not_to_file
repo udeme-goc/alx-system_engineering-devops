@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# 9-to_file_or_not_to_file: check if the file school existes or not and prints
+# information about it.
+
+file_name="school"
+if [ -e "$file_name" ]; then
+	echo "$file_name file exists"
+	if [ -s "$file_name" ]; then
+		echo "$file_name file is not empty"
+	else
+		echo "$file_name file is empty"
+	fi
+	if [ -f "school" ]; then
+		echo "$file_name is a regular file"
+	fi
+	exit
+else
+	echo "$file_name file does not exist"
+	exit
+fi
