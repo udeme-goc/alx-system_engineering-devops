@@ -6,8 +6,8 @@ Welcome to the Command Line for the Win project! This project is designed to hel
 
 ## Author
 
-- Name Udeme Harrison
-- GitHub Username udeme-goc
+- Name: Udeme Harrison
+- GitHub Username: udeme-goc
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ Using Ubuntu 20.04 LTS on Win10 as my CLI, this is how I got the files to my Git
 
 2. I created a directory named command_line_for_the_win inside the cloned repository.
 
-3. Using a tool like Snip, I captured screenshots for each challenge page.
+3. Using the Windows Snip tool, I captured screenshots for each completed challenge page.
 
 4. I saved each screenshot in the command_line_for_the_win directory.
 
@@ -37,6 +37,6 @@ Using Ubuntu 20.04 LTS on Win10 as my CLI, this is how I got the files to my Git
 
 ```bash
 git add .
-git commit -m "Added screenshots for challenges"
+git commit -m 'Screenshots for command-line-for-the-win'
 git push origin main
 ```
