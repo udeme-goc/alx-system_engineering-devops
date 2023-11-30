@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# This script changes the IP resolution of localhost and facebook.com
+
+# Backup the original hosts file
+sudo cp /etc/hosts /etc/hosts.bak
+
+# Change localhost IP to 127.0.0.2
+sudo sed -i 's/127.0.0.1\tlocalhost/127.0.0.2\tlocalhost/' /etc/hosts
+
+# Change facebook.com IP to 8.8.8.8
+sudo sed -i 's/facebook.com/8.8.8.8\tfacebook.com/' /etc/hosts
+
+# Display the modified hosts file
+cat /etc/hosts
+
