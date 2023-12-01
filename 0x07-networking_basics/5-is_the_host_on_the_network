@@ -2,7 +2,7 @@
 # Check if an IP address is provided as an argument. Then ping the provided IP address 5 times.
 
 if [ "$#" -ne 1 ]; then
-	echo "Usage: $0 {IP_ADDRESS}"
+	echo "Usage: $(basename "$0") {IP_ADDRESS}"
 	exit 1
 else
 
