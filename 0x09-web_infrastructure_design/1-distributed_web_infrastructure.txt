@@ -1,0 +1,55 @@
+1. Distributed web infrastructure
+
+Purpose of Additional Elements:
+
+- Load Balancer (HAproxy): Distributes traffic across multiple servers, ensuring optimal resource utilization, improved performance, and high availability. It also handles failover, redirecting requests to healthy servers if one goes down.
+
+- Web Server (Nginx): Efficiently serves static content like images, CSS, and JavaScript files, offloading this task from the application server. It also acts as a reverse proxy, forwarding dynamic requests to the application server, enhancing security and flexibility.
+
+- Application Server (Codebase): Runs the core application logic, processes requests, interacts with the database, and generates dynamic responses.
+
+
+Load Balancer Distribution Algorithm: Round-robin. The diagram suggests a round-robin algorithm, which distributes requests to servers in a circular fashion, ensuring even load distribution. Other algorithms like least connections or weighted round-robin can be considered based on specific needs.
+
+
+Load Balancer Setup: Active-Passive. The diagram depicts an Active-Passive setup, where only one application server actively handles traffic at a time. The other server acts as a passive backup, ready to take over if the primary server fails.
+- Active-Active: In an Active-Active setup, both application servers actively handle traffic simultaneously, maximizing resource utilization and fault tolerance.
+
+
+Database Primary-Replica (Master-Slave) Cluster:
+
+Purpose: Enhances database availability and resilience by replicating data across multiple nodes.
+
+Functioning:
+- Primary Node: Manages all write operations and replicates changes to replica nodes.
+- Replica Nodes: Maintain a read-only copy of the data, serving read requests and acting as backups for failover.
+
+Difference between Primary and Replica Nodes: The application primarily interacts with the Primary Node for both reads and writes. Replica Nodes can be used for read-only operations to offload the Primary Node, but they cannot directly accept write requests.
+
+
+
+ISSUES WITH THE THREE-SERVER WEB INFRASTRUCTURE
+
+Single Points of Failure (SPOFs):
+
+- Load Balancer: If the HAproxy server fails, all traffic is stopped, causing a complete outage.
+
+- Database Primary Node: If the Primary Node in the MySQL cluster fails, the application can't write data, potentially leading to data loss and service disruption.
+
+
+Security Issues:
+
+- No Firewall: The lack of a firewall leaves the infrastructure vulnerable to malicious attacks that could exploit server vulnerabilities or gain unauthorized access.
+
+- No HTTPS: All communication occurs over plain HTTP, leaving data exposed to eavesdropping and potential interception. This is especially critical for sensitive information like login credentials or user data.
+
+- No Monitoring: Without monitoring in place, it's difficult to identify performance issues, server load, or potential failures before they impact users. This lack of visibility can lead to delayed response times, outages, and difficulty pinpointing problems.
+
+
+Recommendations:
+
+- Implement a redundant load balancer configuration to address the HAproxy SPOF.
+- Deploy a firewall to control traffic and block unauthorized access.
+- Enable HTTPS encryption for secure communication between users and the web server.
+- Set up comprehensive monitoring for all servers and the database to track performance, resource utilization, and potential issues.
+- Consider deploying a Secondary MySQL node as a hot standby for failover and improved write performance.
