@@ -1,0 +1,60 @@
+0. Simple web stack
+
+EXPLANATION OF SPECIFICS OF THE ARCHITECTURE
+
+1. Server
+A server is a computer or system that provides services or resources to other computers (clients) over a network. In the context of the web architecture, it hosts and manages the entire infrastructure, coordinating communication between different components.
+
+
+2. The role of the Domain Name
+The domain name serves as a human-readable alias for the IP address of a server. It simplifies the way users access websites by providing a memorable and meaningful address. In this case, "www.foobar.com" is the domain name.
+
+
+3. What type of DNS record is www in www.foobar.com?
+The DNS record for "www" in "www.foobar.com" is a CNAME (Canonical Name) record. It acts as an alias for the domain, directing to the primary domain's IP address.
+
+
+4. Role of the Web Server (Nginx)
+The web server (Nginx) serves as the entry point for user requests. It handles static content directly and forwards dynamic requests to the application server. It acts as a reverse proxy, managing the initial interaction between the user and the web application.
+
+
+5. Role of the Application Server
+The application server processes dynamic requests, executes the codebase, and generates dynamic content based on user interactions. It communicates with the database, if necessary, to retrieve or store data required for the web application.
+
+
+6. Role of the Database
+The database (MySQL) stores and manages structured data needed by the web application. It acts as a persistent storage solution, allowing the application server to retrieve or update information as required by user requests.
+
+
+7. What is the server using to communicate with the computer of the user requesting the website?
+The server communicates with the computer of the user requesting the website using the HTTP (Hypertext Transfer Protocol). HTTP is the foundation of data communication on the World Wide Web, allowing the transfer of hypertext (text with links) and other multimedia files.
+
+
+
+ISSUES WITH THIS INFRASTRUCTURE
+
+1. Single Point of Failure (SPOF):
+
+Issue Explanation: The architecture has a Single Point of Failure (SPOF) because it relies on a single server. If this server experiences any hardware failure, software crash, or other issues, the entire web application becomes inaccessible.
+
+Impact: Complete unavailability of the website in the event of server failure, leading to a poor user experience and potential loss of business.
+
+Mitigation: Introduce redundancy and high availability by implementing load balancing and using multiple servers. Distributing the workload across multiple servers ensures that if one server fails, others can continue to handle requests.
+
+
+2. Downtime when Maintenance Needed:
+
+Issue Explanation: Deploying new code or performing maintenance on the web server requires restarting it. During this restart period, the website experiences downtime, meaning it is temporarily inaccessible to users.
+
+Impact: Users may encounter service interruptions, and any ongoing interactions or transactions could be disrupted. This can result in a negative impact on user satisfaction and trust.
+
+Mitigation: Implement strategies such as rolling deployments or blue-green deployments. These approaches allow updates to be applied without causing downtime. Additionally, redundant servers can be used to maintain service availability during maintenance.
+
+
+3. Cannot Scale if Too Much Incoming Traffic:
+
+Issue Explanation: The architecture does not include mechanisms for horizontal scaling to handle an increase in incoming traffic. If the website experiences a sudden surge in users or traffic, the single server may become overwhelmed, leading to performance degradation or even downtime.
+
+Impact: Inability to effectively handle high traffic loads can result in slow response times, timeouts, or service unavailability during peak periods. This impacts user experience and limits the website's ability to scale with growing demand.
+
+Mitigation: Implement load balancing across multiple servers to distribute incoming traffic. Consider auto-scaling solutions that can dynamically adjust resources based on demand. Utilize content delivery networks (CDNs) to cache and serve static content closer to users, reducing the load on the server.
