@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# This script creates an RSA key pair with the name 'school' and 4096 bits, protected by the passphrase 'betty'
+
+ssh-keygen -t rsa -b 4096 -C "vagrant@ubuntu" -f ~/.ssh/school -N "betty"
+
+# Print information about the generated key pair
+echo "Generating public/private rsa key pair."
+echo "Your identification has been saved in school."
+echo "Your public key has been saved in school.pub."
+echo "The key fingerprint is:"
+ssh-keygen -l -f ~/.ssh/school
+echo "The key's randomart image is:"
+ssh-keygen -l -E md5 -f ~/.ssh/school.pub | cut -d' ' -f2-

@@ -1,0 +1,6 @@
+# SSH client configuration for alx-system_engineering-devops
+
+Host *
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
+    PubkeyAuthentication yes
