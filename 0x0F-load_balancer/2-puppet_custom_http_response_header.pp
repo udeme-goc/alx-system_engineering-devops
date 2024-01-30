@@ -1,43 +1,30 @@
-# File: 2-puppet_custom_http_response_header.pp
+# Setup New Ubuntu server with nginx
+# and add a custom HTTP header
 
-# Install Nginx package
+exec { 'update system':
+        command => '/usr/bin/apt-get update',
+}
+
 package { 'nginx':
-  ensure => installed,
+	ensure => 'installed',
+	require => Exec['update system']
 }
 
-# Define custom HTTP response header
-$file_content = "
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm;
-    server_name _;
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-
-    # Custom HTTP response header
-    add_header X-Served-By $hostname;
-}
-"
-
-# Write Nginx configuration to a file
-file { '/etc/nginx/sites-available/default':
-  ensure  => present,
-  content => $file_content,
+file {'/var/www/html/index.html':
+	content => 'Hello World!'
 }
 
-# Enable the default site
-file { '/etc/nginx/sites-enabled/default':
-  ensure => link,
-  target => '/etc/nginx/sites-available/default',
+exec {'redirect_me':
+	command => 'sed -i "24i\	rewrite ^/redirect_me https://github.com/udeme-goc/ permanent;" /etc/nginx/sites-available/default',
+	provider => 'shell'
 }
 
-# Restart Nginx service
-service { 'nginx':
-  ensure    => running,
-  enable    => true,
-  subscribe => File['/etc/nginx/sites-available/default'],
+exec {'HTTP header':
+	command => 'sed -i "25i\	add_header X-Served-By \$hostname;" /etc/nginx/sites-available/default',
+	provider => 'shell'
+}
+
+service {'nginx':
+	ensure => running,
+	require => Package['nginx']
 }
