@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Configure Nginx to listen on port 80
+service nginx stop
+if ! grep -q "listen 80;" /etc/nginx/sites-available/default 
+then
+	sed -i 's/^\(\s*listen\s*\)[[:digit:]]\+/\180;/g' /etc/nginx/sites-available/default
+	service nginx restart
+fi
