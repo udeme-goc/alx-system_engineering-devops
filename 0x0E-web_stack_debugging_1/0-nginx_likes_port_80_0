@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Script to configure Nginx to listen on port 80
+
+# Check if Nginx is installed
+if ! command -v nginx &> /dev/null; then
+	echo "Nginx is not installed. Please install Nginx first."
+	exit 1
+fi
+
+# Check Nginx configuration for port 80
+if grep -q "listen 80;" /etc/nginx/sites-available/default; then
+	echo "Nginx is already configured to listen on port 80."
+else
+	# Add configuration to listen on port 80\
+	sed -i 's/^\(\s*listen\s*\)[[:digit:]]\+;/\180;/g' /etc/nginx/sites-available/default
+
+	# Check if port 80 is now configured
+	if grep -q "listen 80;" /etc/nginx/sites-available/default; then
+		echo "Nginx configured to listen on port 80 successfully."
+	else
+		echo "Failed to configure Nginx to listen on port 80."
+		exit 1
+	fi
+fi
+
+# Restart Nginx to apply changes
+service nginx restart
