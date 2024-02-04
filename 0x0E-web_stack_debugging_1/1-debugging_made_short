@@ -2,9 +2,4 @@
 # Changes port in Nginx
 sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
 sudo service nginx restart
-sleep 1 # Give some time for Nginx to restart
-if curl -s -I http://localhost:80 | head -n 1 | grep -q "HTTP/1.1 200 OK"; then
-    echo "Nginx is running and returning HTTP 200 on port 80."
-else
-    echo "Nginx is not running or not returning HTTP 200 on port 80."
-fi
+kill -9 "$(cat /var/run/nginx.pid)"
