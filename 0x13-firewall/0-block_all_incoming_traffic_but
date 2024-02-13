@@ -14,8 +14,8 @@ sudo ufw allow 22/tcp
 sudo ufw allow 443/tcp
 sudo ufw allow 80/tcp
 
+# Deny access to all other ports
+sudo ufw deny from any to any
+
 # Enable the firewall
 sudo ufw enable
-
-# Wait for a few seconds to ensure the firewall is fully enabled
-sleep 5
