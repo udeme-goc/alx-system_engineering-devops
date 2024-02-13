@@ -16,3 +16,6 @@ sudo ufw allow 80/tcp
 
 # Enable the firewall
 sudo ufw enable
+
+# Wait for a few seconds to ensure the firewall is fully enabled
+sleep 5
