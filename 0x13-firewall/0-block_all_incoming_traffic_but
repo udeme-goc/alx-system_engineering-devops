@@ -1,0 +1,18 @@
+# Install ufw
+sudo apt-get update
+sudo apt-get install ufw
+
+# Reset the ufw configuration to default
+sudo ufw --force reset
+
+# Set the default policies to deny incoming and allow outgoing
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Allow SSH (port 22), HTTPS (port 443), and HTTP (port 80) traffic
+sudo ufw allow 22/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 80/tcp
+
+# Enable the firewall
+sudo ufw enable
