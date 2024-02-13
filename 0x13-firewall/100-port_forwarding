@@ -1,4 +1,11 @@
+# Configure NAT (Network Address Translation) table
 *nat
+
+# Set the initial policy for PREROUTING chain to ACCEPT
 :PREROUTING ACCEPT [0:0]
+
+# Redirect TCP traffic destined for port 8080 to port 80
 -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80
+
+# Commit the changes to the NAT table
 COMMIT
