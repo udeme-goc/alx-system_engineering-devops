@@ -4,29 +4,66 @@
 # Distribute requests using a roundrobin algorithm
 # Make sure that HAProxy can be managed via an init script
 
-# Install and configure HAproxy on my lb-01 server.
-sudo apt-get -y update
-apt-get -y install haproxy
 
-# edit config file
-server_config=\
-"
-frontend  udsharry_frontend
-        bind *:80
-        mode http
-        default_backend udsharry_backend
+# Displaying message indicating update and checks
+echo -e "Updating and performing some minor checks...\n"
+
+# Function to install a package if it's not already installed
+function install() {
+    # Check if the command is available
+    command -v "$1" &> /dev/null
+
+    # Checking the exit status of the previous command
+    # Disabling SC2181 warning as we intentionally check the exit status of a command here
+    if [ $? -ne 0 ]; then
+        echo -e "    Installing: $1\n"
+        # Updating package repositories and installing the package
+        sudo apt-get update -y -qq && \
+            sudo apt-get install -y "$1" -qq
+        echo -e "\n"
+    else
+        echo -e "    ${1} is already installed.\n"
+    fi
+}
+
+# Installing HAProxy
+install haproxy
+
+echo -e "\nSetting up some minor configurations.\n"
+
+# Backup default server config file
+sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+# Defining the server configuration
+server_config="
+defaults
+  mode http
+  timeout client 15s
+  timeout connect 10s
+  timeout server 15s
+  timeout http-request 10s
+
+frontend udsharry_frontend
+    bind *:80
+    default_backend udsharry_backend
+
 backend udsharry_backend
-        balance roundrobin
-        server 353136-web-01 54.84.10.163:80 check
-        server 353136-web-02 52.3.255.87:80 check
+    balance roundrobin
+    server 353136-web-01 54.209.219.218:80 check
+    server 353136-web-02 52.3.255.87:80 check
 "
-echo "$server_config" | sudo tee -a /etc/haproxy/haproxy.cfg
 
-# enable haproxy to be started by init script
-echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
+# Applying server configuration using dd command
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
 
-# Testing the HAproxy configuration file
-sudo haproxy -c -f /etc/haproxy/haproxy.cfg
+# Enabling HAProxy to be started by init script
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
 
-# Restart the Nginx service
-sudo service haproxy restart
+echo "Configuration completed - Roundrobin On web-01 & web-02"
+
+# Checking if HAProxy is already running and starting or restarting accordingly
+if [ "$(pgrep -c haproxy)" -le 0 ]; then
+    sudo service haproxy start
+else
+    sudo service haproxy restart
+fi
