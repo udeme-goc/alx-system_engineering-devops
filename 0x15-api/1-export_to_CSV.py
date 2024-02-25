@@ -1,40 +1,57 @@
 #!/usr/bin/python3
+"""Export API data to CSV."""
 
 import csv
 import requests
+import sys
 
-def export_to_csv(employee_id):
+def export_to_csv(user_id):
     """
-    Retrieves the todos of a given employee from the JSONPlaceholder API
-    and exports them to a CSV file.
-    
+    Export user's tasks from an API to a CSV file.
+
     Args:
-        employee_id (int): The ID of the employee whose todos are to be exported.
+        user_id (str): The ID of the user whose tasks are to be exported.
+
+    Returns:
+        None
     """
-    # Step 1: Define the URL for fetching todos of the employee
-    url_todos = 'https://jsonplaceholder.typicode.com/'
-                'todos?userId={}'.format(employee_id)
+    # Construct URL to fetch user data
+    url_user = f'https://jsonplaceholder.typicode.com/users/{user_id}'
 
-    # Step 2: Make a GET request to fetch the todos
-    response = requests.get(url_todos)
-    todos = response.json()
+    # Send request to fetch user data
+    res = requests.get(url_user)
 
-    # Step 3: Define the fieldnames for the CSV file
-    fieldnames = ['userId', 'username', 'completed', 'title']
+    # Extract username from response
+    user_name = res.json().get('username')
 
-    # Step 4: Write todos to a CSV file
-    with open('{}.csv'.format(employee_id), 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for todo in todos:
-            writer.writerow({
-                'userId': todo['userId'],
-                'username': todo['username'],
-                'completed': todo['completed'],
-                'title': todo['title']
-            })
+    # Construct URL to fetch user's tasks
+    task = f'{url_user}/todos'
 
-if __name__ == "__main__":
-    # Step 5: Call export_to_csv function with employee_id as argument
-    export_to_csv(1)  # Example: Export todos of employee with ID 1 to CSV
+    # Send request to fetch user's tasks
+    res = requests.get(task)
+    tasks = res.json()
 
+    # Write data to CSV file
+    with open(f'{user_id}.csv', 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        # Write header row
+        csvwriter.writerow(['User ID', 'Username', 'Completed', 'Task Title'])
+
+        # Write each task to CSV
+        for task in tasks:
+            completed = task.get('completed')
+            title_task = task.get('title')
+            csvwriter.writerow([user_id, user_name, completed, title_task])
+
+if __name__ == '__main__':
+    # Check if user ID is provided as command-line argument
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <user_id>")
+        sys.exit(1)
+
+    # Extract user ID from command-line argument
+    user_id = sys.argv[1]
+
+    # Call function to export data to CSV
+    export_to_csv(user_id)

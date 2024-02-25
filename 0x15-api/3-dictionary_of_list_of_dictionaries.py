@@ -1,53 +1,53 @@
 #!/usr/bin/python3
+"""Python script to fetch ToDo lists of employees from a REST API."""
 
 import json
 import requests
+import sys
 
-def generate_user_todo_dict():
-    """
-    Generates a dictionary of users with their corresponding todos
-    fetched from the JSONPlaceholder API.
+if __name__ == '__main__':
+    # URL of the REST API to fetch users
+    url = "https://jsonplaceholder.typicode.com/users"
+
+    # Send a GET request to fetch users
+    resp = requests.get(url)
     
-    Returns:
-        dict: A dictionary containing users with their todos.
-    """
-    # Step 1: Define the base URL for the API
-    base_url = 'https://jsonplaceholder.typicode.com/'
+    # Extract users' data from the response
+    Users = resp.json()
 
-    # Step 2: Make GET requests to retrieve user and todo data
-    users_response = requests.get(base_url + 'users')
-    todos_response = requests.get(base_url + 'todos')
+    # Dictionary to store ToDo lists of employees
+    users_dict = {}
 
-    # Step 3: Parse JSON data from the responses
-    users_data = users_response.json()
-    todos_data = todos_response.json()
-
-    # Step 4: Create an empty dictionary to store todo data
-    user_todo_dict = {}
-
-    # Step 5: Iterate over each user
-    for user in users_data:
-        user_id = user.get('id')
-        username = user.get('username')
-        user_todos = []
-
-        # Step 6: Iterate over todos to find those belonging to the current user
-        for todo in todos_data:
-            if todo.get('userId') == user_id:
-                # Step 7: Extract relevant information and append to user_todos
-                user_todos.append({
-                    "task": todo.get('title'),
-                    "completed": todo.get('completed'),
-                    "username": username
-                })
-
-        # Step 8: Assign the user's todos to the user_id key in user_todo_dict
-        user_todo_dict[user_id] = user_todos
-
-    return user_todo_dict
-
-if __name__ == "__main__":
-    # Step 9: Call generate_user_todo_dict function
-    user_todo_dict = generate_user_todo_dict()
-    print(json.dumps(user_todo_dict, indent=4))
-
+    # Iterate over each user
+    for user in Users:
+        USER_ID = user.get('id')  # Extract user ID
+        USERNAME = user.get('username')  # Extract username
+        
+        # Construct URL to fetch ToDo tasks for the current user
+        url = f'https://jsonplaceholder.typicode.com/users/{USER_ID}/todos/'
+        
+        # Send a GET request to fetch tasks for the current user
+        resp = requests.get(url)
+        
+        # Extract tasks data from the response
+        tasks = resp.json()
+        
+        # Initialize an empty list to store tasks for the current user
+        users_dict[USER_ID] = []
+        
+        # Iterate over each task for the current user
+        for task in tasks:
+            # Extract task details
+            TASK_COMPLETED_STATUS = task.get('completed')
+            TASK_TITLE = task.get('title')
+            
+            # Append task details to the list of tasks for the current user
+            users_dict[USER_ID].append({
+                "task": TASK_TITLE,
+                "completed": TASK_COMPLETED_STATUS,
+                "username": USERNAME
+            })
+    
+    # Write the dictionary containing ToDo lists of employees to a JSON file
+    with open('todo_all_employees.json', 'w') as f:
+        json.dump(users_dict, f)

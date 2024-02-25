@@ -1,24 +1,44 @@
 #!/usr/bin/python3
+"""Python script to retrieve data from an API and convert it to JSON format."""
 
+import csv
 import json
 import requests
+import sys
 
-def export_to_json():
-    """
-    Retrieves all todos from the JSONPlaceholder API and exports them
-    to a JSON file.
-    """
-    # Step 1: Define the URL for fetching all todos
-    url_todos = 'https://jsonplaceholder.typicode.com/todos'
+if __name__ == '__main__':
+    # Get user ID from command-line arguments
+    USER_ID = sys.argv[1]
 
-    # Step 2: Make a GET request to fetch all todos
-    response = requests.get(url_todos)
-    todos = response.json()
+    # URL to fetch user data
+    url_to_user = 'https://jsonplaceholder.typicode.com/users/' + USER_ID
 
-    # Step 3: Write todos to a JSON file
-    with open('todo_all_employees.json', 'w') as json_file:
-        json.dump(todos, json_file, indent=4)
+    # Send request to fetch user data
+    res = requests.get(url_to_user)
 
-if __name__ == "__main__":
-    # Step 4: Call export_to_json function
-    export_to_json()
+    # Extract username from response
+    USERNAME = res.json().get('username')
+
+    # URL to fetch user's tasks
+    url_to_task = url_to_user + '/todos'
+
+    # Send request to fetch user's tasks
+    res = requests.get(url_to_task)
+    tasks = res.json()
+
+    # Create dictionary to store data
+    dict_data = {USER_ID: []}
+
+    # Iterate through tasks and populate dictionary
+    for task in tasks:
+        TASK_COMPLETED_STATUS = task.get('completed')
+        TASK_TITLE = task.get('title')
+        dict_data[USER_ID].append({
+            "task": TASK_TITLE,
+            "completed": TASK_COMPLETED_STATUS,
+            "username": USERNAME
+        })
+
+    # Write data to JSON file
+    with open('{}.json'.format(USER_ID), 'w') as f:
+        json.dump(dict_data, f)

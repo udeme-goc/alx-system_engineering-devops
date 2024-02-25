@@ -1,51 +1,60 @@
 #!/usr/bin/python3
+"""
+Script to retrieve employee data from an API and display completed tasks.
 
-import json
+This script takes an employee ID as a command-line argument and fetches the
+employee's data from a REST API. It then retrieves tasks assigned to the 
+employee and prints the number of completed tasks out of the total tasks, 
+along with the titles of the completed tasks.
+
+The API used in this script is 'https://jsonplaceholder.typicode.com'.
+
+Usage:
+    $ python script_name.py employee_id
+
+Arguments:
+    employee_id (int): The ID of the employee to retrieve data for.
+"""
+
+import re
 import requests
+import sys
 
-def fetch_todo_data():
-    """
-    Fetches data from the JSONPlaceholder API for users and their todos,
-    organizes it into a dictionary, and saves it to a JSON file.
-    """
-    # Step 1: Define the base URL for the API
-    base_url = 'https://jsonplaceholder.typicode.com/'
+REST_API = "https://jsonplaceholder.typicode.com"
 
-    # Step 2: Make GET requests to retrieve user and todo data
-    users_response = requests.get(base_url + 'users')
-    todos_response = requests.get(base_url + 'todos')
-
-    # Step 3: Parse JSON data from the responses
-    users_data = users_response.json()
-    todos_data = todos_response.json()
-
-    # Step 4: Create an empty dictionary to store todo data
-    todo_dict = {}
-
-    # Step 5: Iterate over each user
-    for user in users_data:
-        user_id = user.get('id')
-        username = user.get('username')
-        user_todos = []
-
-        # Step 6: Iterate over todos to find those belonging to the current user
-        for todo in todos_data:
-            if todo.get('userId') == user_id:
-                # Step 7: Extract relevant information and append to user_todos
-                task = {
-                    "username": username,
-                    "task": todo.get('title'),
-                    "completed": todo.get('completed')
-                }
-                user_todos.append(task)
-
-        # Step 8: Assign the user's todos to the user_id key in todo_dict
-        todo_dict[user_id] = user_todos
-
-    # Step 9: Write the todo_dict to a JSON file
-    with open('todo_all_employees.json', 'w') as json_file:
-        json.dump(todo_dict, json_file, indent=4)
-
-if __name__ == "__main__":
-    # Step 10: Call the fetch_todo_data function to execute the process
-    fetch_todo_data()
+if __name__ == '__main__':
+    # Check if command-line arguments are provided
+    if len(sys.argv) > 1:
+        # Check if the first argument is a valid integer
+        if re.fullmatch(r'\d+', sys.argv[1]):
+            # Convert the first argument to an integer (employee ID)
+            id = int(sys.argv[1])
+            
+            # Request employee data from the API
+            req = requests.get('{}/users/{}'.format(REST_API, id)).json()
+            
+            # Request tasks data from the API
+            task_req = requests.get('{}/todos'.format(REST_API)).json()
+            
+            # Extract employee name from the response
+            emp_name = req.get('name')
+            
+            # Filter tasks for the specific employee
+            tasks = list(filter(lambda x: x.get('userId') == id, task_req))
+            
+            # Filter completed tasks
+            completed_tasks = list(filter(lambda x: x.get('completed'), tasks))
+            
+            # Print employee information
+            print(
+                'Employee {} is done with tasks({}/{}):'.format(
+                    emp_name,
+                    len(completed_tasks),
+                    len(tasks)
+                )
+            )
+            
+            # If there are completed tasks, print them
+            if len(completed_tasks) > 0:
+                for task in completed_tasks:
+                    print('\t {}'.format(task.get('title')))
