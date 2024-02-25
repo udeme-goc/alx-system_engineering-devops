@@ -1,0 +1,33 @@
+	size_t i; /* Variable to iterate through the array *	size_t i; /* Variable to iterate through the array *ckage lists to ensure the availability of the latest versions of packages
+sudo apt update
+
+# Install Snapd, a package manager for snaps (containerized software packages)
+sudo apt install snapd
+
+# Remove Certbot if it's already installed (not always necessary)
+sudo apt-get remove certbot
+
+# Install Certbot, a tool used for obtaining SSL/TLS certificates
+sudo apt-get install certbot
+
+# Stop HAproxy to free up port 80
+sudo service haproxy stop
+
+# Request SSL/TLS certificates for the specified domain(s) using Certbot in standalone mode
+sudo certbot certonly --standalone --preferred-challenges http --http-01-port 80 -d www.udsharry.tech
+
+# List the contents of the directory containing SSL/TLS certificates for the specified domain
+sudo ls /etc/letsencrypt/live/www.udsharry.tech
+
+# Create a directory to store HAProxy SSL/TLS certificates if it doesn't already exist
+sudo mkdir -p /etc/haproxy/certs
+
+# Concatenate the full chain and private key files into a single PEM file for HAProxy
+DOMAIN='www.udsharry.tech' sudo -E bash -c 'cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/letsencrypt/live/$DOMAIN/privkey.pem > /etc/haproxy/certs/$DOMAIN.pem'
+
+# Restrict permissions of the SSL/TLS certificates directory
+sudo chmod -R go-rwx /etc/haproxy/certs
+
+# Edit the HAProxy configuration file using the nano text editor
+sudo vi /etc/haproxy/haproxy.cfg
+

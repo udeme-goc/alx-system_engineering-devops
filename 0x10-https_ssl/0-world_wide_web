@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# This script prints information about domains and subdomains.
+
+# Define a function to print information about a specific domain and subdomain
+print_domain_subdomain () {
+    # Use dig command to fetch DNS information for the given domain
+    dig "$1" | 
+    # Use grep to extract the ANSWER SECTION of the dig output
+    grep -A1 'ANSWER SECTION:' | 
+    # Use sed to replace occurrences of the domain name with the provided subdomain name
+    sed -r "s/$1./$2/g" | 
+    # Use awk to parse and print relevant information from the output
+    awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
+}
+
+# Check if the script is provided with 2 arguments (domain name and subdomain)
+if [ "$#" -eq 2 ]
+then
+    # If 2 arguments are provided, call the function with the provided domain and subdomain
+    print_domain_subdomain "$2.$1" "$2"
+else
+    # If not provided with 2 arguments, print information for common subdomains
+    print_domain_subdomain "www.$1" "www"
+    print_domain_subdomain "lb-01.$1" "lb-01"
+    print_domain_subdomain "web-01.$1" "web-01"
+    print_domain_subdomain "web-02.$1" "web-02"
+fi
